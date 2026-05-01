@@ -9,6 +9,19 @@ defmodule Lineup.Queue do
   alias Lineup.Queue.Ticket
 
   @doc """
+  Returns the list of tickets.
+
+  ## Examples
+
+      iex> list_tickets()
+      [%Ticket{}, ...]
+
+  """
+  def list_tickets do
+    Repo.all(Ticket)
+  end
+
+  @doc """
   Creates a ticket.
 
   ## Examples

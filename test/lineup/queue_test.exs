@@ -8,6 +8,11 @@ defmodule Lineup.QueueTest do
 
     import Lineup.QueueFixtures
 
+    test "list_tickets/0 returns all tickets" do
+      ticket = ticket_fixture()
+      assert Queue.list_tickets() == [ticket]
+    end
+
     test "create_ticket/1 with valid data creates a ticket" do
       valid_attrs = %{called_at: ~U[2026-04-27 16:00:00Z]}
 
