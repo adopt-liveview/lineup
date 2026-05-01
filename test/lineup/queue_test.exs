@@ -20,6 +20,14 @@ defmodule Lineup.QueueTest do
       assert ticket.called_at == ~U[2026-04-27 16:00:00Z]
     end
 
+    test "update_ticket/2 with valid data updates the ticket" do
+      ticket = ticket_fixture()
+      update_attrs = %{called_at: ~U[2026-04-28 16:00:00Z]}
+
+      assert {:ok, %Ticket{} = ticket} = Queue.update_ticket(ticket, update_attrs)
+      assert ticket.called_at == ~U[2026-04-28 16:00:00Z]
+    end
+
     test "delete_ticket/1 deletes the ticket" do
       ticket = ticket_fixture()
       assert {:ok, %Ticket{}} = Queue.delete_ticket(ticket)

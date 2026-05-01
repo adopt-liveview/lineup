@@ -14,6 +14,9 @@ defmodule LineupWeb.TicketLive.Show do
           <.button navigate={~p"/"}>
             <.icon name="hero-arrow-left" />
           </.button>
+          <.button variant="primary" navigate={~p"/tickets/#{@ticket}/edit?return_to=show"}>
+            <.icon name="hero-pencil-square" /> Edit ticket
+          </.button>
         </:actions>
       </.header>
 

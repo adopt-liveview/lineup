@@ -37,8 +37,13 @@ defmodule LineupWeb.TicketLive.Index do
         rows={@streams.tickets}
         row_click={fn {_id, ticket} -> JS.navigate(~p"/tickets/#{ticket}") end}
       >
-        <:col :let={{_id, ticket}} label="ID">{ticket.id}</:col>
-        <:col :let={{_id, ticket}} label="Called at">{ticket.called_at || "n/a"}</:col>
+        <:col :let={{_id, ticket}} label="Called at">{ticket.called_at}</:col>
+        <:action :let={{_id, ticket}}>
+          <div class="sr-only">
+            <.link navigate={~p"/tickets/#{ticket}"}>Show</.link>
+          </div>
+          <.link navigate={~p"/tickets/#{ticket}/edit"}>Edit</.link>
+        </:action>
         <:action :let={{id, ticket}}>
           <.link
             phx-click={JS.push("delete", value: %{id: ticket.id}) |> hide("##{id}")}

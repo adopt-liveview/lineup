@@ -56,6 +56,24 @@ defmodule Lineup.Queue do
   end
 
   @doc """
+  Updates a ticket.
+
+  ## Examples
+
+      iex> update_ticket(ticket, %{field: new_value})
+      {:ok, %Ticket{}}
+
+      iex> update_ticket(ticket, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_ticket(%Ticket{} = ticket, attrs) do
+    ticket
+    |> Ticket.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
   Deletes a ticket.
 
   ## Examples
