@@ -1,4 +1,4 @@
-defmodule LineupWeb.TicketLive.New do
+defmodule LineupWeb.TicketLive.Form do
   use LineupWeb, :live_view
 
   alias Lineup.Queue
@@ -25,16 +25,32 @@ defmodule LineupWeb.TicketLive.New do
   end
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(params, _session, socket) do
+    {:ok,
+     socket
+     |> apply_action(socket.assigns.live_action, params)}
+  end
+
+  defp apply_action(socket, :edit, %{"id" => id}) do
+    ticket = Queue.get_ticket!(id)
+    changeset = Queue.change_ticket(ticket)
+    form = to_form(changeset)
+
+    socket
+    |> assign(:page_title, "Edit Ticket")
+    |> assign(:ticket, ticket)
+    |> assign(:form, to_form(form))
+  end
+
+  defp apply_action(socket, :new, _params) do
     ticket = %Ticket{}
     changeset = Queue.change_ticket(ticket)
     form = to_form(changeset)
 
-    {:ok,
-     socket
-     |> assign(:page_title, "New Ticket")
-     |> assign(:ticket, ticket)
-     |> assign(:form, form)}
+    socket
+    |> assign(:page_title, "New Ticket")
+    |> assign(:ticket, ticket)
+    |> assign(:form, to_form(form))
   end
 
   @impl true
@@ -44,10 +60,23 @@ defmodule LineupWeb.TicketLive.New do
   end
 
   def handle_event("save", %{"ticket" => ticket_params}, socket) do
-    save_ticket(socket, ticket_params)
+    save_ticket(socket, socket.assigns.live_action, ticket_params)
   end
 
-  defp save_ticket(socket, ticket_params) do
+  defp save_ticket(socket, :edit, ticket_params) do
+    case Queue.update_ticket(socket.assigns.ticket, ticket_params) do
+      {:ok, ticket} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, "Ticket updated successfully")
+         |> push_navigate(to: ~p"/tickets/#{ticket}")}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign(socket, form: to_form(changeset))}
+    end
+  end
+
+  defp save_ticket(socket, :new, ticket_params) do
     case Queue.create_ticket(ticket_params) do
       {:ok, _ticket} ->
         {:noreply,

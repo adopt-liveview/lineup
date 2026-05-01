@@ -18,9 +18,9 @@ defmodule LineupWeb.Router do
     pipe_through :browser
 
     live "/", TicketLive.Index, :index
-    live "/tickets/new", TicketLive.New, :new
+    live "/tickets/new", TicketLive.Form, :new
     live "/tickets/:id", TicketLive.Show, :show
-    live "/tickets/:id/edit", TicketLive.Edit, :edit
+    live "/tickets/:id/edit", TicketLive.Form, :edit
   end
 
   # Other scopes may use custom stacks.
