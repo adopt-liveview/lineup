@@ -20,6 +20,12 @@ defmodule Lineup.QueueTest do
       assert ticket.called_at == ~U[2026-04-27 16:00:00Z]
     end
 
+    test "delete_ticket/1 deletes the ticket" do
+      ticket = ticket_fixture()
+      assert {:ok, %Ticket{}} = Queue.delete_ticket(ticket)
+      assert_raise Ecto.NoResultsError, fn -> Queue.get_ticket!(ticket.id) end
+    end
+
     test "change_ticket/1 returns a ticket changeset" do
       ticket = ticket_fixture()
       assert %Ecto.Changeset{} = Queue.change_ticket(ticket)

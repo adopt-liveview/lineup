@@ -12,6 +12,14 @@ defmodule LineupWeb.TicketLive.Index do
   end
 
   @impl true
+  def handle_event("delete", %{"id" => id}, socket) do
+    ticket = Queue.get_ticket!(id)
+    {:ok, _} = Queue.delete_ticket(ticket)
+
+    {:noreply, stream_delete(socket, :tickets, ticket)}
+  end
+
+  @impl true
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash}>
@@ -31,6 +39,14 @@ defmodule LineupWeb.TicketLive.Index do
       >
         <:col :let={{_id, ticket}} label="ID">{ticket.id}</:col>
         <:col :let={{_id, ticket}} label="Called at">{ticket.called_at || "n/a"}</:col>
+        <:action :let={{id, ticket}}>
+          <.link
+            phx-click={JS.push("delete", value: %{id: ticket.id}) |> hide("##{id}")}
+            data-confirm="Are you sure?"
+          >
+            Delete
+          </.link>
+        </:action>
       </.table>
     </Layouts.app>
     """

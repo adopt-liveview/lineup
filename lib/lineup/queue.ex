@@ -56,6 +56,22 @@ defmodule Lineup.Queue do
   end
 
   @doc """
+  Deletes a ticket.
+
+  ## Examples
+
+      iex> delete_ticket(ticket)
+      {:ok, %Ticket{}}
+
+      iex> delete_ticket(ticket)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_ticket(%Ticket{} = ticket) do
+    Repo.delete(ticket)
+  end
+
+  @doc """
   Returns an `%Ecto.Changeset{}` for tracking ticket changes.
 
   ## Examples
