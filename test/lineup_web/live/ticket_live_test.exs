@@ -42,4 +42,14 @@ defmodule LineupWeb.TicketLiveTest do
       assert html =~ "Ticket created successfully"
     end
   end
+
+  describe "Show" do
+    setup [:create_ticket]
+
+    test "displays ticket", %{conn: conn, ticket: ticket} do
+      {:ok, _show_live, html} = live(conn, ~p"/tickets/#{ticket}")
+
+      assert html =~ "Show Ticket"
+    end
+  end
 end

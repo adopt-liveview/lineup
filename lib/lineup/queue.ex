@@ -22,6 +22,22 @@ defmodule Lineup.Queue do
   end
 
   @doc """
+  Gets a single ticket.
+
+  Raises `Ecto.NoResultsError` if the Ticket does not exist.
+
+  ## Examples
+
+      iex> get_ticket!(123)
+      %Ticket{}
+
+      iex> get_ticket!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_ticket!(id), do: Repo.get!(Ticket, id)
+
+  @doc """
   Creates a ticket.
 
   ## Examples

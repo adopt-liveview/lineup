@@ -19,6 +19,7 @@ defmodule LineupWeb.Router do
 
     live "/", TicketLive.Index, :index
     live "/tickets/new", TicketLive.New, :new
+    live "/tickets/:id", TicketLive.Show, :show
   end
 
   # Other scopes may use custom stacks.

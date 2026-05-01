@@ -27,6 +27,7 @@ defmodule LineupWeb.TicketLive.Index do
       <.table
         id="tickets"
         rows={@streams.tickets}
+        row_click={fn {_id, ticket} -> JS.navigate(~p"/tickets/#{ticket}") end}
       >
         <:col :let={{_id, ticket}} label="ID">{ticket.id}</:col>
         <:col :let={{_id, ticket}} label="Called at">{ticket.called_at || "n/a"}</:col>
