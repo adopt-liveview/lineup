@@ -13,11 +13,20 @@ defmodule Lineup.QueueTest do
       assert Queue.list_tickets() == [ticket]
     end
 
-    test "create_ticket/1 with valid data creates a ticket" do
+    test "create_ticket/1 with valid data creates a ticket and broadcasts the update" do
       valid_attrs = %{called_at: ~U[2026-04-27 16:00:00Z]}
+
+      Queue.subscribe_to_tickets()
 
       assert {:ok, %Ticket{} = ticket} = Queue.create_ticket(valid_attrs)
       assert ticket.called_at == ~U[2026-04-27 16:00:00Z]
+      new_ticket_id = ticket.id
+
+      assert_receive %Phoenix.Socket.Broadcast{
+        topic: "queue:tickets",
+        event: "add_ticket",
+        payload: %{ticket_id: ^new_ticket_id}
+      }
     end
 
     test "update_ticket/2 with valid data updates the ticket" do

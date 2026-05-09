@@ -22,6 +22,12 @@ defmodule LineupWeb.TicketLiveTest do
       assert html =~ "Listing Tickets"
     end
 
+    test "receives new tickets via pubsub", %{conn: conn} do
+      {:ok, index_live, html} = live(conn, ~p"/")
+      new_ticket = ticket_fixture()
+      assert has_element?(index_live, "#tickets-#{new_ticket.id}")
+    end
+
     test "saves new ticket", %{conn: conn} do
       {:ok, index_live, _html} = live(conn, ~p"/")
 

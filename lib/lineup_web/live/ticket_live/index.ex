@@ -5,6 +5,8 @@ defmodule LineupWeb.TicketLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
+    Queue.subscribe_to_tickets()
+
     {:ok,
      socket
      |> assign(:page_title, "Listing Tickets")
@@ -17,6 +19,19 @@ defmodule LineupWeb.TicketLive.Index do
     {:ok, _} = Queue.delete_ticket(ticket)
 
     {:noreply, stream_delete(socket, :tickets, ticket)}
+  end
+
+  @impl true
+  def handle_info(
+        %Phoenix.Socket.Broadcast{
+          topic: "queue:tickets",
+          event: "add_ticket",
+          payload: %{ticket_id: ticket_id}
+        },
+        socket
+      ) do
+    ticket = Queue.get_ticket!(ticket_id)
+    {:noreply, socket |> stream_insert(:tickets, ticket)}
   end
 
   @impl true

@@ -4,6 +4,7 @@ defmodule Lineup.Queue do
   """
 
   import Ecto.Query, warn: false
+  alias LineupWeb.Endpoint
   alias Lineup.Repo
 
   alias Lineup.Queue.Ticket
@@ -38,7 +39,7 @@ defmodule Lineup.Queue do
   def get_ticket!(id), do: Repo.get!(Ticket, id)
 
   @doc """
-  Creates a ticket.
+  Creates a ticket and broadcasts its ID when successful.
 
   ## Examples
 
@@ -53,6 +54,12 @@ defmodule Lineup.Queue do
     %Ticket{}
     |> Ticket.changeset(attrs)
     |> Repo.insert()
+    |> tap(fn result ->
+      if match?({:ok, %Ticket{}}, result) do
+        {:ok, ticket} = result
+        Endpoint.broadcast("queue:tickets", "add_ticket", %{ticket_id: ticket.id})
+      end
+    end)
   end
 
   @doc """
@@ -100,5 +107,26 @@ defmodule Lineup.Queue do
   """
   def change_ticket(%Ticket{} = ticket, attrs \\ %{}) do
     Ticket.changeset(ticket, attrs)
+  end
+
+  @topic "queue:tickets"
+
+  @doc """
+  Keep track of tickets changes on the queue:tickets topic
+
+  ## Events
+
+      %Phoenix.Socket.Broadcast{topic: "queue:tickets", event: "add_ticket", payload: %{ticket_id: 1}}
+
+  """
+  def subscribe_to_tickets() do
+    Endpoint.subscribe(@topic)
+  end
+
+  @doc """
+  Broadcasts "add_ticket" event to the queue:tickets topic
+  """
+  def broadcast_ticket_created(ticket) do
+    Endpoint.broadcast(@topic, "add_ticket", %{ticket_id: ticket.id})
   end
 end
